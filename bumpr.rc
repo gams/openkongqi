@@ -1,0 +1,18 @@
+[bumpr]
+file = openkongqi/__init__.py
+vcs = git
+tests = python -m unittest discover
+clean =
+    python setup.py clean
+    rm -rf *egg-info build dist
+files =
+    README.rst
+    setup.py
+    docs/conf.py
+
+[bump]
+unsuffix = true
+message = Bump version to {version}
+
+[readthedoc]
+id = openkongqi

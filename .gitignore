@@ -1,0 +1,14 @@
+*.pyc
+*.tox
+_cache
+celerybeat-schedule
+openkongqi.db
+openkongqi.log
+
+# sphinx
+docs/_build
+
+# setuptools
+build
+dist
+*.egg-info
