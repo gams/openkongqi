@@ -10,7 +10,9 @@ from celery.bin.celery import main as clry_main
 
 
 def okq_server():
-    parser = argparse.ArgumentParser(description='outdoor air quality data')
+    parser = argparse.ArgumentParser(
+            description='outdoor air quality data',
+            epilog='Any extra argument is directly passed to celery')
     parser.add_argument('--okqconf', dest='conffile', action='store',
         type=str, help='path to a configuration file')
     args, clry_args = parser.parse_known_args()
