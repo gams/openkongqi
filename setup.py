@@ -44,7 +44,14 @@ setup(
         'Topic :: Text Processing :: Markup :: XML',
     ],
     keywords="air quality",
-    entry_points = {
+    package_data={
+        'openkongqi': [
+            'data/user_agent_strings.json',
+            'data/sources/pm25.in.json',
+            'openkongqi/data/stations/cn/shanghai.json'
+        ],
+    },
+    entry_points={
         'console_scripts': ["okq-server=openkongqi.bin:okq_server"],
-    }
+    },
 )
