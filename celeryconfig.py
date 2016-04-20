@@ -1,8 +1,9 @@
 import copy
-from datetime import timedelta
 
-from openkongqi.source import get_sources
+from openkongqi.celery import get_schedule
 
+# Constants
+SECONDS_PER_MINUTE = 60
 
 # List of modules to import when celery starts.
 CELERY_IMPORTS = ('openkongqi.tasks', )
@@ -26,12 +27,4 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Shanghai'
 
 
-dyn_schedule = dict()
-for source in get_sources():
-    dyn_schedule[source['name']] = {
-        'task': 'openkongqi.tasks.fetch',
-        'schedule': timedelta(minutes=30),
-        'args': (source['name'], )
-    }
-
-CELERYBEAT_SCHEDULE = copy.copy(dyn_schedule)
+CELERYBEAT_SCHEDULE = copy.copy(get_schedule(seconds=30 * SECONDS_PER_MINUTE))
