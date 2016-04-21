@@ -30,24 +30,20 @@ class TestExtractPM25in(TestExtract):
         self.sources = {
             src: metadata
             for src, metadata in self.sources.items()
-            if metadata['modname'] == 'pm25in'
+            if metadata['modname'].endswith('pm25in')
         }
-        self.mod = import_module('.' + 'pm25in', 'openkongqi.source')
+        self.mod = import_module('openkongqi.source.' + 'pm25in')
+        # shanghai covers most cases, can always override
+        self.src_name = 'pm25.in/shanghai'
+        self.src = self.mod.Source(self.src_name)
+        self.data_points = self.src.extract(
+            open(self.sources[self.src_name]['content-fpath'], 'rt').read()
+        )
 
     def test_numeric_integer(self):
-        src_name = 'pm25.in/shanghai'
-        src = self.mod.Source(src_name)
-        data_points = src.extract(
-            open(self.sources[src_name]['content-fpath'], 'rt').read()
-        )
         # int value for pm2.5
-        self.assertEqual(data_points[0][3], '33')
+        self.assertEqual(self.data_points[0][3], '33')
 
     def test_numeric_float(self):
-        src_name = 'pm25.in/shanghai'
-        src = self.mod.Source(src_name)
-        data_points = src.extract(
-            open(self.sources[src_name]['content-fpath'], 'rt').read()
-        )
         # float values for CO
-        self.assertEqual(data_points[2][3], '0.579')
+        self.assertEqual(self.data_points[2][3], '0.579')
