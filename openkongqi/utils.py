@@ -29,8 +29,9 @@ def get_rnd_item(fpath):
 def get_uuid(*args):
     """Return a UUID built from fragments
 
-    :param *args: UUID fragments
-    :type *args: str
+    :param \*args: UUID fragments
+    :type \*args: str
+    :returns: str - a UUID resulting from string concatenation
     """
     return SEP.join(args)
 
