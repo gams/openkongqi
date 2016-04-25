@@ -159,4 +159,4 @@ recsdb = create_recsdb(settings['DATABASES']['records'])
 
 # create instance of cache and catch any error as early as possible
 from .cache import FileCache
-FileCache()
+file_cache = FileCache(settings['CACHE'])

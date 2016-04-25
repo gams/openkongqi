@@ -4,23 +4,20 @@ from datetime import datetime
 import os
 import shutil
 
-from .conf import settings
 from .exceptions import CacheError
 
-
 FILENAME = "{key}-{ts}.txt"
-
 
 class FileCache(object):
     """Simple file caching based on a key name and content.
     """
-    def __init__(self):
-        if os.path.isabs(settings['CACHE']):
-            self.cachepath = settings['CACHE']
+    def __init__(self, folder_name):
+        if os.path.isabs(folder_name):
+            self.cachepath = folder_name
         else:
             self.cachepath = os.path.join(
                 os.getcwd(),
-                settings['CACHE'])
+                folder_name)
         if not os.path.exists(self.cachepath):
             try:
                 os.makedirs(self.cachepath)

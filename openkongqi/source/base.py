@@ -9,7 +9,7 @@ import socket
 import ssl
 import urllib2
 
-from ..conf import settings, logger, statusdb, recsdb
+from ..conf import settings, logger, statusdb, recsdb, file_cache
 from ..cache import FileCache
 from ..exceptions import SourceError
 from ..stations import get_station_map
@@ -48,7 +48,7 @@ class BaseSource(object):
             settings['SOURCES'][name]['uuid'])
         self._tz = pytz.timezone(settings['SOURCES'][name]['tz'])
         self._status = statusdb
-        self._cache = FileCache()
+        self._cache = file_cache
         self._records = recsdb
 
     def scrape(self):
