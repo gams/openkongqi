@@ -52,6 +52,9 @@ setup(
         ],
     },
     entry_points={
-        'console_scripts': ["okq-server=openkongqi.bin:okq_server"],
+        'console_scripts': [
+            "okq-server=openkongqi.bin:okq_server",
+            "okq-init=openkongqi.bin:okq_init",
+        ]
     },
 )

@@ -1,5 +1,5 @@
 #####################################
-openkongqi - outdoor air quality data 
+openkongqi - outdoor air quality data
 #####################################
 
 .. image:: https://travis-ci.org/gams/openkongqi.svg?branch=master
@@ -72,7 +72,7 @@ Create necessary database & tables:
 
 .. code-block:: sh
 
-    (openkongqi)$ python -c "import openkongqi.conf; openkongqi.conf.recsdb.init()"
+    (openkongqi)$ python -c "import openkongqi.conf; openkongqi.conf.recsdb.db_init()"
 
 Run celery:
 
