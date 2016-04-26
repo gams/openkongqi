@@ -1,6 +1,6 @@
 import copy
 
-from openkongqi.celery import get_schedule
+from openkongqi.sched import get_schedule
 
 # Constants
 SECONDS_PER_MINUTE = 60
