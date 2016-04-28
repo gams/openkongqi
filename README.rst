@@ -72,7 +72,7 @@ Create necessary database & tables:
 
 .. code-block:: sh
 
-    (openkongqi)$ python -c "import openkongqi.conf; openkongqi.conf.recsdb.db_init()"
+    (openkongqi)$ python -c "import openkongqi.bin; openkongqi.bin.okq_init()"
 
 Run celery:
 
