@@ -10,7 +10,6 @@ import ssl
 import urllib2
 
 from ..conf import settings, logger, statusdb, recsdb, file_cache
-from ..cache import FileCache
 from ..exceptions import SourceError
 from ..stations import get_station_map
 from ..utils import get_rnd_item, get_uuid
@@ -68,11 +67,6 @@ class BaseSource(object):
         self._now = datetime.now(pytz.utc)
         src_content = self.fetch()
         self.save_status()
-        content_length = src_content.headers.get('content-length')
-        if (src_content.getcode == 200 and
-            (content_length is None or content_length == 0)):
-            logger.warning("Fetched content is empty; skipping cache ...")
-            return
         if src_content is not None:
             content = self.cache(src_content)
             data = self.extract(content)
@@ -194,7 +188,14 @@ class HTTPSource(BaseSource):
         self._info = resp.info()
         self._statuscode = resp.getcode()
         logger.debug("Fetch status: HTTP {}".format(self._statuscode))
-        return resp
+
+        content_length = resp.headers.get('content-length')
+        if (self._statuscode == 200 and
+            (content_length is None or content_length == 0)):
+            logger.warning("Fetched content is empty; skipping cache ...")
+            return None
+        else:
+            return resp
 
     def get_req(self, target):
         """Return an :class:`urllib2.Request` instance
