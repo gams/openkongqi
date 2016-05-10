@@ -81,6 +81,16 @@ class BaseSource(object):
         """
         raise NotImplementedError
 
+    def post_fetch(self, resource):
+        """Treat the resource after fetching raw content
+
+        .. warning:: This method has to be overwritten
+
+        :param resource: raw content / data (could be http, csv, xml, etc...)
+        :returns: content - a file-like object
+        """
+        raise NotImplementedError
+
     def get_station_uuid(self, name):
         """Return the uuid of a station
 
@@ -195,7 +205,10 @@ class HTTPSource(BaseSource):
             logger.warning("Fetched content is empty; skipping cache ...")
             return None
         else:
-            return resp
+            return self.post_fetch(resp)
+
+    def post_fetch(self, resource):
+        return resource
 
     def get_req(self, target):
         """Return an :class:`urllib2.Request` instance
