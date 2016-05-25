@@ -62,15 +62,23 @@ class BaseRecordsWrapper(object):
         """
         raise NotImplementedError
 
-    def get_records(self, start, end, filters=None):
-        """Returns a list of Records.
+    def get_records(self, uuid, start, end, fields=None):
+        """Get records between two dates and for certain fields.
+
+        If fields is ``None``, then select all the fields available.
+
+        Returns a generator for all the records found.
 
         .. warning:: This method has to be overwritten
 
+        :param uuid: unique id
+        :type uuid: str
         :param start: the start date (lower boundary)
+        :type start: datetime.datetime
         :param end: the end date (upper boundary)
-        :param filters: list of columns to select
-        :type filters: list of str
+        :type end: datetime.datetime
+        :param fields: fields to filter on
+        :type fields: list
         """
         raise NotImplementedError
 
