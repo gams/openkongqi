@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from .conf import settings
 from .exceptions import UUIDNotFoundError
-from .utils import load_tree, passthrough_loader
+from .utils import get_uuid, load_tree, passthrough_loader
 
 _STATIONS_MAP = load_tree(settings['STATIONS_MAP_DIR'],
                           data_loader=passthrough_loader)
@@ -26,3 +26,11 @@ def get_station_map(uuid=None):
     except KeyError:
         raise UUIDNotFoundError("Unknown UUID ({})".format(uuid))
     return id_map
+
+
+def get_all_uuids():
+    """Return a sorted list of complete station UUIDs."""
+    res = []
+    for country, station_map in _STATIONS_MAP.items():
+        res.extend([get_uuid(country, s) for s in station_map.values()])
+    return sorted(res)
