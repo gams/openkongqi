@@ -11,8 +11,9 @@ class BaseRecordsWrapper(object):
     for creating the database connection.
     """
 
-    def __init__(self, settings, *args, **kwargs):
+    def __init__(self, settings, cache, *args, **kwargs):
         self._cnx = self.create_cnx(settings)
+        self._cache = cache
 
     def create_cnx(self, settings):
         """Create a connection to the database
@@ -35,7 +36,7 @@ class BaseRecordsWrapper(object):
 
         .. warning:: This method has be overwritten
 
-        :param record: a tuple to be appended to the db as a single row
+        :param record: a tuple to be appended to the db as a single entry
         :type record: tuple
         """
         raise NotImplementedError
@@ -45,7 +46,7 @@ class BaseRecordsWrapper(object):
 
         .. warning:: This method has to be overwritten
 
-        :param record: a tuple to be appended to the db as a single row
+        :param record: a tuple to be appended to the db as a single entry
         :type record: tuple
         :param commit: boolean for updating db
         :type commit: bool
@@ -57,7 +58,7 @@ class BaseRecordsWrapper(object):
 
         .. warning:: This method has to be overwritten
 
-        :param records: list of tuples to be appended to the db as rows
+        :param records: list of tuples to be appended to the db
         :type records: list of tuples
         """
         raise NotImplementedError
@@ -74,7 +75,23 @@ class BaseRecordsWrapper(object):
         """
         raise NotImplementedError
 
+    def set_latest(self, uuid, record):
+        """Set record as the latest entry in cache database.
 
-def create_recsdb(settings):
+        :param uuid: unique id
+        :type uuid: str
+        """
+        raise NotImplementedError
+
+    def get_latest(self, uuid):
+        """Get latest record entry from cache database.
+
+        :param uuid: unique id
+        :type uuid: str
+        """
+        raise NotImplementedError
+
+
+def create_recsdb(settings, cache):
     mod = load_backend(settings['ENGINE'])
-    return mod.RecordsWrapper(settings)
+    return mod.RecordsWrapper(settings, cache)

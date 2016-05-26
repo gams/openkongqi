@@ -18,6 +18,7 @@ from .exceptions import ConfigError, SourceError
 from .utils import load_tree, dig_loader
 from .status.base import create_statusdb
 from .records.base import create_recsdb
+from .cache.base import create_cachedb
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -69,10 +70,10 @@ os.environ.setdefault('OKQ_CONFMODULE', CONFMODULE)
 
 # default settings
 global_settings = {
-    'CACHE': '_cache',
+    'RESOURCE_CACHE': '_cache',
     'DATABASES': {
         'status': {
-            'ENGINE': 'openkongqi.status.redis_db',
+            'ENGINE': 'openkongqi.status.redisdb',
             'NAME': '',
             'USER': '',
             'PASSWORD': '',
@@ -83,7 +84,13 @@ global_settings = {
         'records': {
             'ENGINE': 'openkongqi.records.sqlite3',
             'NAME': 'openkongqi',
-        }
+        },
+        'cache': {
+            'ENGINE': 'openkongqi.cache.redisdb',
+            'HOST': 'localhost',
+            'PORT': 6379,
+            'DB_ID': 0,
+        },
     },
     'LOGGING': DEFAULT_LOGGING,
     'LOGFILE': 'openkongqi.log',
@@ -154,9 +161,12 @@ if not settings['SOURCES']:
 # load status db
 statusdb = create_statusdb(settings['DATABASES']['status'])
 
+# load cache db
+cachedb = create_cachedb(settings['DATABASES']['cache'])
+
 # load records db
-recsdb = create_recsdb(settings['DATABASES']['records'])
+recsdb = create_recsdb(settings['DATABASES']['records'], cachedb)
 
 # create instance of cache and catch any error as early as possible
-from .cache import FileCache
-file_cache = FileCache(settings['CACHE'])
+from .filecache import FileCache
+file_cache = FileCache(settings['RESOURCE_CACHE'])
