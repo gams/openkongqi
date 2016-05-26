@@ -58,6 +58,22 @@ The following fragments compose the UUID:
 
 All names have to be expressed in Uppercase or lowercase or numeric latin letters.
 
+Install
+=======
+
+Make sure the `lxml` package is installed, on debian:
+
+.. code:: sh
+
+    $ apt-get install python-lxml
+
+Install the code:
+
+.. code:: sh
+
+    $ pip install -U pip==8.1.1
+    $ pip install pip-tools
+    $ pip-sync requirements.txt
 
 Development
 ===========
