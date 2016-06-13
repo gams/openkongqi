@@ -6,7 +6,6 @@ import os
 import unittest
 
 from openkongqi.conf import settings
-from openkongqi.stations import get_station_map
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -19,7 +18,9 @@ class TestExtract(unittest.TestCase):
         sources = copy(settings['SOURCES'])
         for src in sources:
             sources[src]['content-fpath'] = \
-                os.path.join(TEST_DATA_PATH, '{}.html'.format(src))
+                os.path.join(TEST_DATA_PATH, '{}.html'.format(
+                    src.replace(':', '/')
+                ))
         self.sources = sources
 
 
@@ -34,7 +35,7 @@ class TestExtractPM25in(TestExtract):
         }
         self.mod = import_module('openkongqi.source.' + 'pm25in')
         # shanghai covers most cases, can always override
-        self.src_name = 'pm25.in/shanghai'
+        self.src_name = 'pm25.in:shanghai'
         self.src = self.mod.Source(self.src_name)
         self.data_points = self.src.extract(
             open(self.sources[self.src_name]['content-fpath'], 'rt').read()

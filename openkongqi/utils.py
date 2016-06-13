@@ -8,7 +8,7 @@ import random
 
 from .exceptions import ConfigError
 
-SEP = '/'
+SEP = ':'
 
 
 def get_rnd_item(fpath):

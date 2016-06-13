@@ -1,7 +1,7 @@
 {
     "shanghai": {
         "target": "http://pm25.in/shanghai",
-        "uuid": "cn/shanghai",
+        "uuid": "cn:shanghai",
         "modname": "openkongqi.source.pm25in",
         "tz": "Asia/Shanghai"
     }
