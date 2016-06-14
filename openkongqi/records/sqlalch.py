@@ -64,14 +64,25 @@ class SQLAlchemyRecordsWrapper(BaseRecordsWrapper):
             self.write_record(record, commit=False)
         self._cnx.commit()
 
-    def get_records(self, start, end, filters=None):
-        query = self._cnx.query(Record)
-        if filters is not None:
-            # NOTE: `load_only`` is only available in >=0.9.0
-            query = query.options(load_only(*filters))
-        # time boundaries
-        query = query.filter(Record.ts >= start and Record.ts <= end)
-        return query
+    def get_records(self, uuid, start, end, fields=None):
+        query = self._cnx.query(Record).filter(Record.uuid == uuid)
+
+        # make input time parameters UTC or force it
+        def to_utc(dt):
+            if dt.tzinfo is None:
+                return dt.replace(tzinfo=pytz.utc)
+            else:
+                return dt.astimezone(pytz.utc)
+        start_dt = to_utc(start)
+        end_dt = to_utc(end)
+        query = query.filter(Record.ts >= start_dt).filter(Record.ts <= end_dt)
+
+        # filter which fields
+        if fields is not None:
+            query = query.filter(Record.key.in_(fields))
+
+        for rec in query.all():
+            yield Record.to_tuple(rec)
 
 
 class Record(Base):
@@ -86,4 +97,22 @@ class Record(Base):
         return (
             "<Record(ts='{ts}', uuid='{uuid}', key='{key}', value='{value}')>"
             .format(ts=self.ts, uuid=self.uuid, key=self.key, value=self.value)
+        )
+
+    @classmethod
+    def to_tuple(self, record):
+        """Return a tuple from a `Record` object.
+
+        .. note:: Inverse function of `Record.from_tuple`
+
+        The tuple returned should have the same data structure as
+        the `record` parameter passed to `Record.from_tuple`.
+
+        :returns: tuple
+        """
+        return (
+            record.ts,
+            record.uuid,
+            record.key,
+            record.value,
         )
