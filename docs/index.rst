@@ -3,20 +3,30 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to OpenKongqi's documentation!
-======================================
+Openkongqi
+==========
 
-Contents:
+`Github Issues <https://github.com/gams/openkongqi/issues>`_ |
+`Repository <https://github.com/gams/openkongqi>`_
+
+Introduction
+============
+
+The name origin comes from the fact that Kōngqì (空气) is the Chinese word for air/atmosphere.
 
 .. toctree::
    :maxdepth: 2
 
+   installation
+   development
+   settings
+   code
+   changes
 
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+.. Indices and tables
+.. ==================
+..
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`

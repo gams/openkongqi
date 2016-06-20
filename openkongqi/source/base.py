@@ -94,7 +94,7 @@ class BaseSource(object):
     def get_station_uuid(self, name):
         """Return the uuid of a station
 
-        .. warning:: This is not performing any recursive search in the map
+        .. note:: This is not performing any recursive search in the map
         """
         return get_uuid(settings['SOURCES'][self.name]['uuid'],
                         self._station_map[name])
