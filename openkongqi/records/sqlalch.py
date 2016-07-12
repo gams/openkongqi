@@ -49,19 +49,18 @@ class SQLAlchemyRecordsWrapper(BaseRecordsWrapper):
         """Return engine url / data source name (DSN) of database."""
         return self._engine
 
-    def write_record(self, record, commit=True):
-        if not self.is_duplicate(record):
-            r = Record(ts=record[0].astimezone(pytz.utc),  # UTC timezne
-                       uuid=record[1],
-                       key=record[2],
-                       value=record[3])
-            self._cnx.add(r)
-        if commit:
-            self._cnx.commit()
-
-    def write_records(self, records):
-        for record in records:
-            self.write_record(record, commit=False)
+    def write_records(self, data):
+        for uuid, records in data.items():
+            rows = []
+            for record in records:
+                for fieldname, value in record['fields'].items():
+                    rows.append(
+                        Record(ts=record['ts'].astimezone(pytz.utc),
+                               uuid=uuid,
+                               key=fieldname,
+                               value=value)
+                    )
+            self._cnx.add_all(rows)
         self._cnx.commit()
 
     def get_records(self, start, end, filters=None):

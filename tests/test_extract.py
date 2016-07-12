@@ -19,7 +19,7 @@ class TestExtract(unittest.TestCase):
         for src in sources:
             sources[src]['content-fpath'] = \
                 os.path.join(TEST_DATA_PATH, '{}.html'.format(
-                    src.replace(':', '/')
+                    src.replace(':', os.sep)
                 ))
         self.sources = sources
 
@@ -43,8 +43,18 @@ class TestExtractPM25in(TestExtract):
 
     def test_numeric_integer(self):
         # int value for pm2.5
-        self.assertEqual(self.data_points[0][3], '33')
+        uuid = 'cn:shanghai:hongkou'
+        self.assertIn(uuid, self.data_points)
+        self.assertEqual(
+            self.data_points[uuid][0]['fields']['pm25'],
+            '22'
+        )
 
     def test_numeric_float(self):
         # float values for CO
-        self.assertEqual(self.data_points[2][3], '0.579')
+        uuid = 'cn:shanghai:putuo'
+        self.assertIn(uuid, self.data_points)
+        self.assertEqual(
+            self.data_points[uuid][0]['fields']['co'],
+            '0.653'
+        )
