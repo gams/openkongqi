@@ -11,7 +11,7 @@ def get_schedule(seconds):
     dyn_schedule = dict()
     for source in get_sources():
         dyn_schedule[source['name']] = {
-            'task': 'openkongqi.tasks.fetch',
+            'task': 'openkongqi.tasks.scrape',
             'schedule': timedelta(seconds=seconds),
             'args': (source['name'], )
         }

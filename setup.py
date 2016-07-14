@@ -23,7 +23,7 @@ setup(
     version=okq.__version__,
     author=okq.__author__,
     author_email=okq.__contact__,
-    license="",  # TODO
+    license="Apache License 2.0",
     packages=find_packages(exclude=['docs', 'test*']),
     url="https://github.com/gams/openkongqi",
     description="Outdoor air quality data",
@@ -55,6 +55,7 @@ setup(
         'console_scripts': [
             "okq-server=openkongqi.bin:okq_server",
             "okq-init=openkongqi.bin:okq_init",
+            "okq-source-test=utils.source_test:main",
         ]
     },
 )
