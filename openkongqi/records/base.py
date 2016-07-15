@@ -5,7 +5,7 @@ import pytz
 
 from ..utils import load_backend
 
-_CACHE_KEY = 'okq:{modname}:{uuid}:latest'
+_CACHE_KEY = 'okq:{moduuid}:{uuid}:latest'
 
 
 class BaseRecordsWrapper(object):
@@ -49,7 +49,7 @@ class BaseRecordsWrapper(object):
         """
         raise NotImplementedError
 
-    def write_records(self, records):
+    def write_records(self, records, ignore_check_latest=False, context=None):
         """Save the records
 
         See data extraction format on what to expect as input.
@@ -58,7 +58,7 @@ class BaseRecordsWrapper(object):
         """
         raise NotImplementedError
 
-    def get_records(self, start, end, filters=None):
+    def get_records(self, start, end, filters=None, context=None):
         """Returns a list of Records.
 
         .. warning:: This method has to be overwritten
@@ -101,7 +101,11 @@ class BaseRecordsWrapper(object):
         )
         if latest is None:
             return None
-        return json.loads(latest)
+        record = json.loads(latest)
+        return {
+            'ts': self._string_to_ts(record['ts']),
+            'fields': record['fields'],
+        }
 
     def _ts_to_string(self, ts):
         """Convert a datetime.datetime object to a string.

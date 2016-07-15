@@ -32,6 +32,9 @@ class Source(HTTPSource):
     * 10 - SO2
     """
 
+    key_context = {
+        u'moduuid': 'pm25in',
+    }
     #: regexp matching null characters
     null_re = re.compile(r'_')
 

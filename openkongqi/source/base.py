@@ -46,8 +46,6 @@ class BaseSource(object):
         self._station_map = get_station_map(
             settings['SOURCES'][name]['uuid'])
         self._tz = pytz.timezone(settings['SOURCES'][name]['tz'])
-        self._modname = settings['SOURCES'][name]['modname'].split('.')[-1]
-        self._key_ctx = {'modname': self._modname}
         self._status = statusdb
         self._cache = file_cache
         self._records = recsdb
@@ -151,11 +149,19 @@ class BaseSource(object):
         """
         raise NotImplementedError
 
-    def save_data(self, data):
-        self._records.write_records(data, context=self._key_ctx)
+    def save_data(self, data, ignore_check_latest=False):
+        self._records.write_records(data,
+                                    ignore_check_latest=ignore_check_latest,
+                                    context=self.key_context)
 
     def get_latest(self, uuid):
-        return self._records.get_latest(uuid, context=self._key_ctx)
+        return self._records.get_latest(uuid, context=self.key_context)
+
+    def get_records(self, uuid, start, end, filters=None):
+        return self._records.get_records(uuid=uuid,
+                                         start=start,
+                                         end=end,
+                                         context=self.key_context)
 
 
 class HTTPSource(BaseSource):
