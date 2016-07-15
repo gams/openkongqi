@@ -30,7 +30,7 @@ pluggy==0.3.1             # via tox
 py==1.4.31                # via tox
 pyflakes==1.0.0           # via flake8
 Pygments==2.1.1           # via sphinx
-pytz==2015.4
+pytz==2016.1
 redis==2.10.3
 requests-toolbelt==0.6.0  # via twine
 requests==2.9.1           # via requests-toolbelt, twine
