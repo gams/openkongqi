@@ -74,9 +74,6 @@ global_settings = {
     'DATABASES': {
         'status': {
             'ENGINE': 'openkongqi.status.redisdb',
-            'NAME': '',
-            'USER': '',
-            'PASSWORD': '',
             'HOST': 'localhost',
             'PORT': '6379',
             'DB_ID': 1,
