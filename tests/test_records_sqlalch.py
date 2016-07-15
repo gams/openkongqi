@@ -6,6 +6,7 @@ from datetime import datetime
 from importlib import import_module
 from uuid import uuid4
 import os
+import pytz
 
 from openkongqi.cache.redisdb import CacheWrapper
 from openkongqi.records.sqlite3 import RecordsWrapper
@@ -48,17 +49,62 @@ class TestRecordsWrapper(unittest.TestCase):
     def load_data(self, filemod):
         """Load records in database, return the records"""
         mod = import_module('tests.data.' + filemod)
-        recs = mod.DATA
-        context = {'moduuid': mod.MODNAME}
-        self.wrapper.write_records(recs, context=context)
+        records = mod.DATA
+        context = {'modname': mod.MODNAME}
         return {
             'key_context': context,
-            'records': recs,
+            'records': records,
         }
+
+
+class TestWriteRecords(TestRecordsWrapper):
+
+    def test_write_records(self):
+        data = self.load_data('pm25in_sh_201607130254_201607130454')
+        records = data['records']
+        context = data.get('key_context')
+        # we only need to test for one uuid
+        uuid = 'cn:shanghai:putuo'
+        putuo_records = records[uuid]
+        # insert the last two hours
+        start = datetime(2016, 7, 13, 3, tzinfo=pytz.utc)  # 03:54 and 04:54
+        # stop = datetime(2016, 7, 14)
+        last_records = filter(lambda r: r['ts'] > start, putuo_records)
+        self.wrapper.write_records({uuid: last_records},
+                                   ignore_check_latest=False,
+                                   context=context)
+        # should be 04:54
+        self.assertEqual(
+            self.wrapper.get_latest(uuid, context=context),
+            last_records[-1]
+        )
+        # insert the first hour, check that latest is not overwritten
+        first_records = filter(lambda r: r['ts'] < start, putuo_records)
+        self.wrapper.write_records({uuid: first_records},
+                                   ignore_check_latest=True,
+                                   context=context)
+        # check that latest is still 04:54
+        self.assertEqual(
+            self.wrapper.get_latest(uuid, context=context),
+            last_records[-1]
+        )
+        # check that inserting existing data would not raise exceptions
+        try:
+            self.wrapper.write_records({uuid: putuo_records}, context=context)
+        except:
+            self.fail(
+                'Attemtping to insert duplicate records should not raise exceptions!'
+            )
+
+
+class TestGetRecords(TestRecordsWrapper):
 
     def test_get_records(self):
         data = self.load_data('pm25in_sh_201607130254_201607130454')
-        recs = data['records']
+        records = data['records']
+        self.wrapper.write_records(records,
+                                   ignore_check_latest=False,
+                                   context=data.get('key_context'))
         station_uuid = 'cn:shanghai:putuo'
         start = datetime(2016, 7, 13, 3)  # should query 03:54 and 04:54
         end = datetime(2016, 7, 14)
@@ -69,5 +115,5 @@ class TestRecordsWrapper(unittest.TestCase):
         self.assertEqual(len(res), 2)
         self.assertEqual(
             res[-1]['fields']['pm25'],
-            recs[station_uuid][-1]['fields']['pm25']
+            records[station_uuid][-1]['fields']['pm25']
         )
