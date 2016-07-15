@@ -12,9 +12,10 @@ class RecordsWrapper(SQLAlchemyRecordsWrapper):
 
     def create_dsn(self, settings):
         engine = 'sqlite'
-        db_name = '{}.db'.format(settings.get('NAME', _NAME))
-        if db_name:
-            dsn = URL(engine, database=db_name)
-        else:  # empty string or None
+        db_name = settings.get('NAME', _NAME)
+        db_filename = '{}.db'.format(db_name)
+        if db_name == ':memory:':
             dsn = URL(engine)  # in memory sqlite db
+        else:
+            dsn = URL(engine, database=db_filename)
         return dsn

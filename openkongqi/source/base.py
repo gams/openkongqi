@@ -149,8 +149,19 @@ class BaseSource(object):
         """
         raise NotImplementedError
 
-    def save_data(self, data):
-        self._records.write_records(data)
+    def save_data(self, data, ignore_check_latest=False):
+        self._records.write_records(data,
+                                    ignore_check_latest=ignore_check_latest,
+                                    context=self.key_context)
+
+    def get_latest(self, uuid):
+        return self._records.get_latest(uuid, context=self.key_context)
+
+    def get_records(self, uuid, start, end, filters=None):
+        return self._records.get_records(uuid=uuid,
+                                         start=start,
+                                         end=end,
+                                         context=self.key_context)
 
 
 class HTTPSource(BaseSource):
@@ -194,18 +205,27 @@ class HTTPSource(BaseSource):
                          .format(_common_error_header, e.message))
             return None
 
-        logger.info("Data successfully fetched.")
         self._info = resp.info()
         self._statuscode = resp.getcode()
         logger.debug("Fetch status: HTTP {}".format(self._statuscode))
 
-        content_length = resp.headers.get('content-length')
-        if (self._statuscode == 200 and
-            (content_length is None or content_length == 0)):
-            logger.warning("Fetched content is empty; skipping cache ...")
+        if self._statuscode == 204:  # 204: No Content
+            logger.warning("No message body included")
             return None
+
+        try:
+            # don't use `resp.headers.get('content-length`)
+            # because if it doesn't exist in headers it will return None
+            # which makes it a false negative
+            content_length = resp.headers['content-length']
+        except KeyError:
+            pass
         else:
-            return self.post_fetch(resp)
+            if (self._statuscode == 200 and content_length == '0'):
+                logger.warning("Fetched content is empty; skipping cache ...")
+                return None
+
+        return self.post_fetch(resp)
 
     def post_fetch(self, resource):
         return resource
