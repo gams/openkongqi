@@ -12,7 +12,7 @@ celery==3.1.18
 hiredis==0.2.0
 html5lib==0.99999
 kombu==3.0.33             # via celery
-pytz==2015.4
+pytz==2016.6.1
 redis==2.10.3
 six==1.10.0               # via html5lib
 SQLAlchemy==1.0.4
