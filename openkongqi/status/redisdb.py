@@ -5,7 +5,6 @@ import redis
 
 from .base import BaseStatusWrapper
 
-_PASSWORD = 'admin'
 _HOST = 'localhost'
 _PORT = '6379'
 _DB_ID = 0
@@ -17,13 +16,7 @@ class StatusWrapper(BaseStatusWrapper):
     """A wrapper for redis connection and custom methods"""
 
     def create_cnx(self, db_settings):
-        """Create a connection to database.
-
-        :param db_settings: dictionary containing database configuration
-        :type db_settings: dict
-        """
-        return redis.StrictRedis(password=db_settings.get('PASSWORD', _PASSWORD),
-                                 host=db_settings.get('HOST', _HOST),
+        return redis.StrictRedis(host=db_settings.get('HOST', _HOST),
                                  port=db_settings.get('PORT', _PORT),
                                  db=db_settings.get('DB_ID', _DB_ID))
 

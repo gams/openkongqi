@@ -32,6 +32,7 @@ class BaseSource(object):
     point of this class.
     """
 
+    key_context = None
     _now = None
 
     def __init__(self, name):
@@ -149,8 +150,19 @@ class BaseSource(object):
         """
         raise NotImplementedError
 
-    def save_data(self, data):
-        self._records.write_records(data)
+    def save_data(self, data, ignore_check_latest=False):
+        self._records.write_records(data,
+                                    ignore_check_latest=ignore_check_latest,
+                                    context=self.key_context)
+
+    def get_latest(self, uuid):
+        return self._records.get_latest(uuid, context=self.key_context)
+
+    def get_records(self, uuid, start, end, filters=None):
+        return self._records.get_records(uuid=uuid,
+                                         start=start,
+                                         end=end,
+                                         context=self.key_context)
 
 
 class HTTPSource(BaseSource):

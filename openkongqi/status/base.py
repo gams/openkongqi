@@ -18,6 +18,9 @@ class BaseStatusWrapper(object):
         """Create a connection to the database.
 
         .. warning:: This method has to be overwritten
+
+        :param db_settings: dictionary containing database configuration
+        :type db_settings: dict
         """
         raise NotImplementedError
 
