@@ -32,6 +32,7 @@ class BaseSource(object):
     point of this class.
     """
 
+    key_context = None
     _now = None
 
     def __init__(self, name):
