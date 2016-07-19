@@ -39,7 +39,8 @@ class Source(HTTPSource):
     null_re = re.compile(r'_')
 
     def extract(self, content):
-        soup = bs4.BeautifulSoup(content)
+        # Avoid warnings of bs4>=4.4 by explicitly stating parser
+        soup = bs4.BeautifulSoup(content, "html5lib")
         time = soup.find(class_="live_data_time").p.text
         ts = datetime.strptime(time.split(u'\uff1a')[1],
                                '%Y-%m-%d %H:%M:%S').replace(tzinfo=self._tz)
