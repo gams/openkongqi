@@ -71,7 +71,7 @@ Install the code:
 
 .. code:: sh
 
-    $ pip install -U pip==8.1.1
+    $ pip install -U pip
     $ pip install pip-tools
     $ pip-sync requirements.txt
 
@@ -82,7 +82,7 @@ Install development environment:
 
 .. code-block:: sh
 
-    $ pip install -r dev_requirements.txt
+    $ pip install -r requirements-dev.txt
 
 Create necessary database & tables:
 
