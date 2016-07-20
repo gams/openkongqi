@@ -8,56 +8,23 @@ from uuid import uuid4
 import os
 import pytz
 
-from openkongqi.cache.redisdb import CacheWrapper
-from openkongqi.records.sqlite3 import RecordsWrapper
+import openkongqi
+from openkongqi.cache import *
+from openkongqi.records import *
 
 
-class TestRecordsWrapper(unittest.TestCase):
-    """Test RecordsWrapper from openkongqi.records.sqlalch"""
-
-    def setUp(self):
-        self.dbname = ":memory:"  # in memory
-        # create unique okqtest key prefix to prevent clashes
-        self.test_key_prefix = 'okqtest:{}'.format(uuid4().hex)
-        cache_key = self.test_key_prefix + ':{uuid}:latest'
-        db_settings = {
-            'records': {
-                'NAME': self.dbname,
-                'CACHE_KEY': cache_key,
-            },
-            'cache': {
-                'HOST': 'localhost',
-                'PORT': 6379,
-                'DB_ID': 10,
-            },
-        }
-        self.cache = CacheWrapper(db_settings['cache'])
-        self.wrapper = RecordsWrapper(db_settings['records'], self.cache)
-        self.wrapper.db_init()
-
-    def tearDown(self):
-        try:
-            # just delete whole file first
-            os.remove('{}.db'.format(self.dbname))
-        except OSError:
-            self.wrapper._cnx.execute("DROP TABLE records")
-        # drop all redis keys
-        self.cache._cnx.delete(
-            *self.cache._cnx.keys('{}*'.format(self.test_key_prefix))
-        )
+class TestRecordsWrapperMixin(object):
+    """Test RecordsWrapper base methods"""
 
     def load_data(self, filemod):
         """Load records in database, return the records"""
         mod = import_module('tests.data.' + filemod)
         records = mod.DATA
-        context = {'modname': mod.MODNAME}
+        context = {'moduuid': mod.MODNAME}
         return {
             'key_context': context,
             'records': records,
         }
-
-
-class TestWriteRecords(TestRecordsWrapper):
 
     def test_write_records(self):
         data = self.load_data('pm25in_sh_201607130254_201607130454')
@@ -96,9 +63,6 @@ class TestWriteRecords(TestRecordsWrapper):
                 'Attemtping to insert duplicate records should not raise exceptions!'
             )
 
-
-class TestGetRecords(TestRecordsWrapper):
-
     def test_get_records(self):
         data = self.load_data('pm25in_sh_201607130254_201607130454')
         records = data['records']
@@ -116,4 +80,42 @@ class TestGetRecords(TestRecordsWrapper):
         self.assertEqual(
             res[-1]['fields']['pm25'],
             records[station_uuid][-1]['fields']['pm25']
+        )
+
+
+class TestSQLAlchemyRecordsWrapper(unittest.TestCase, TestRecordsWrapperMixin):
+
+    def setUp(self):
+        self.dbname = ":memory:"  # in memory
+        # create unique okqtest key prefix to prevent clashes
+        self.test_key_prefix = 'okqtest:{}'.format(uuid4().hex)
+        cache_key = self.test_key_prefix + ':{moduuid}:{uuid}:latest'
+        db_conf = {
+            'records': {
+                'NAME': self.dbname,
+                'CACHE_KEY': cache_key,
+            },
+            'cache': {
+                'HOST': 'localhost',
+                'PORT': 6379,
+                'DB_ID': 10,
+            },
+        }
+        self.cache = openkongqi.cache.redisdb.CacheWrapper(
+            db_conf['cache']
+        )
+        self.wrapper = openkongqi.records.sqlite3.RecordsWrapper(
+            db_conf['records'], self.cache
+        )
+        self.wrapper.db_init()
+
+    def tearDown(self):
+        try:
+            # just delete whole file first
+            os.remove('{}.db'.format(self.dbname))
+        except OSError:
+            self.wrapper._cnx.execute("DROP TABLE records")
+        # drop all redis keys
+        self.cache._cnx.delete(
+            *self.cache._cnx.keys('{}*'.format(self.test_key_prefix))
         )
