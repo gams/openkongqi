@@ -131,14 +131,6 @@ class SQLAlchemyRecordsWrapper(BaseRecordsWrapper):
             }
 
 
-def to_utc(dt):
-    """Make input time parameters UTC or force it."""
-    if dt.tzinfo is None:
-        return dt.replace(tzinfo=pytz.utc)
-    else:
-        return dt.astimezone(pytz.utc)
-
-
 class Record(Base):
     __tablename__ = 'records'
 

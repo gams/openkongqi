@@ -6,7 +6,7 @@ import os
 import os.path
 import random
 
-from .exceptions import ConfigError
+from .exceptions import ConfigError, SourceError
 
 SEP = ':'
 
@@ -46,6 +46,18 @@ def dig_loader(base_uuid, data):
         name = get_uuid(base_uuid, key)
         _data[name] = info
     return _data
+
+
+def get_source(name):
+    """Get the source object based on a name."""
+    # import only occurs when function is called
+    from .conf import settings
+    if name not in settings['SOURCES']:
+        raise SourceError("Unknown source ({})".format(name))
+    modname = settings['SOURCES'][name]['modname']
+    mod = import_module(modname)
+    src = mod.Source(name)
+    return src
 
 
 def load_backend(backend_name):
