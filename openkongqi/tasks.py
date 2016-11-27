@@ -15,7 +15,7 @@ logger = get_task_logger(__name__)
 
 
 @app.task
-def fetch(name):
+def scrape(name):
     if name not in settings['SOURCES']:
         raise SourceError("Unknown source ({})".format(name))
     modname = settings['SOURCES'][name]['modname']
