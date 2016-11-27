@@ -47,7 +47,7 @@ class TestExtractPM25in(TestExtract):
         self.assertIn(uuid, self.data_points)
         self.assertEqual(
             self.data_points[uuid][0]['fields']['pm25'],
-            '22'
+            22.0
         )
 
     def test_numeric_float(self):
@@ -56,5 +56,5 @@ class TestExtractPM25in(TestExtract):
         self.assertIn(uuid, self.data_points)
         self.assertEqual(
             self.data_points[uuid][0]['fields']['co'],
-            '0.653'
+            0.653
         )
