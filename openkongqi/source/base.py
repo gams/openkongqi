@@ -136,10 +136,11 @@ class BaseSource(object):
     def pythonify(self, text, is_num=False):
         if text is None:
             return None
+
         if self.null_re is not None:
             if self.null_re.match(text) is None:
                 if is_num:  # remove everything but nums and dots
-                    return re.sub(r'[^\d.]+', '', text)
+                    return float(re.sub(r'[^\d.]+', '', text))
                 else:
                     return text
             else:
