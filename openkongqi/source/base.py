@@ -145,6 +145,14 @@ class BaseSource(object):
                     return text
             else:
                 return None
+        else:
+            if is_num:  # remove everything but nums and dots
+                try:
+                    return float(re.sub(r'[^\d.]+', '', text))
+                except ValueError:
+                    pass
+            else:
+                return text
 
     def extract(self, content):
         """Extract data from the content
