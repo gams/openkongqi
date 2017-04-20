@@ -135,6 +135,13 @@ Create packages:
 
     $ python setup.py sdist bdist_wheel
 
+Push package:
+
+.. code-block:: sh
+
+    $ twine upload dist/*
+    $ twine upload -r pypi dist/*
+
 Name origin
 ===========
 
