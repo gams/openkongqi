@@ -2,8 +2,7 @@
 """
 Naive settings for openkongqi
 
-Very naive approach for settings management. Create an env variable
-'OKQ_CONFMODULE' with the name of a configuration module to setup openkongqi.
+Very naive approach for settings management. 
 
 No lazy loading, all straight talk!
 """
@@ -65,8 +64,8 @@ DEFAULT_LOGGING = {
     'version': 1,
 }
 
-CONFMODULE = 'okqconfig'
-os.environ.setdefault('OKQ_CONFMODULE', CONFMODULE)
+#CONFMODULE = 'okqconfig'
+#os.environ.setdefault('OKQ_CONFMODULE', CONFMODULE)
 
 # default settings
 global_settings = {
@@ -90,7 +89,7 @@ global_settings = {
         },
     },
     'LOGGING': DEFAULT_LOGGING,
-    'LOGFILE': 'openkongqi.log',
+    'LOGFILE': '/tmp/openkongqi.log',
     'DEBUG': False,
     'SOURCES': {},
     'SOURCES_DIR': os.path.join(here, 'data/sources'),
@@ -98,6 +97,13 @@ global_settings = {
     'UA_FILE': os.path.join(here, 'data/user_agent_strings.json'),
     'STATIONS_MAP_DIR': os.path.join(here, 'data/stations'),
 }
+
+settings = {}
+logger = None
+statusdb = None
+cachedb = None
+recsdb = None
+file_cache = None
 
 
 def load_logging():
@@ -111,59 +117,49 @@ def load_logging():
     logging.config.dictConfig(settings['LOGGING'])
 
 
-# settings magic
-okq_confmod = os.getenv('OKQ_CONFMODULE')
-try:
-    config = import_module(okq_confmod)
-    local_settings = config.settings
-except ImportError:
-    local_settings = {}
-    if okq_confmod != CONFMODULE:
-        sys.stderr.write('No such configuration file ({})\n'
-                         .format(os.environ.get('OKQ_CONFMODULE')))
+def config_from_object(obj):
+    local_settings = obj.settings
+    # use default values or the values found in settings file
+    for setting in global_settings:
+        settings[setting] = local_settings.get(setting,
+                global_settings[setting])
 
-settings = {}
-# use default values or the values found in settings file
-for setting in global_settings:
-    settings[setting] = local_settings.get(setting,
-                                           global_settings[setting])
+    # create logger instance
+    logger = logging.getLogger('okq')
+    try:
+        load_logging()
+    except ValueError:
+        raise ConfigError('Invalid logging configuration')
 
-# create logger instance
-logger = logging.getLogger('okq')
-try:
-    load_logging()
-except ValueError:
-    raise ConfigError('Invalid logging configuration')
+    # check for existence and readability of UA_FILE;
+    # catch ConfigError as early as possible
+    try:
+        open(settings['UA_FILE'], 'r')
+    except IOError as e:
+        raise ConfigError("{} ({})"
+                          .format(e.strerror, settings['UA_FILE']))
 
-# check for existence and readability of UA_FILE;
-# catch ConfigError as early as possible
-try:
-    open(settings['UA_FILE'], 'r')
-except IOError as e:
-    raise ConfigError("{} ({})"
-                      .format(e.strerror, settings['UA_FILE']))
+    # check for existence of sources and stations map directory
+    for fname in ['STATIONS_MAP_DIR', 'SOURCES_DIR']:
+        fpath = settings[fname]
+        if not os.path.exists(fpath):
+            raise ConfigError("Directory not found ({}: {})"
+                              .format(fname, fpath))
 
-# check for existence of sources and stations map directory
-for fname in ['STATIONS_MAP_DIR', 'SOURCES_DIR']:
-    fpath = settings[fname]
-    if not os.path.exists(fpath):
-        raise ConfigError("Directory not found ({}: {})"
-                          .format(fname, fpath))
+    # load sources from sources directory
+    settings['SOURCES'] = load_tree(settings['SOURCES_DIR'], dig_loader)
+    if not settings['SOURCES']:
+        raise SourceError("No configured source")
 
-# load sources from sources directory
-settings['SOURCES'] = load_tree(settings['SOURCES_DIR'], dig_loader)
-if not settings['SOURCES']:
-    raise SourceError("No configured source")
+    # load status db
+    statusdb = create_statusdb(settings['DATABASES']['status'])
 
-# load status db
-statusdb = create_statusdb(settings['DATABASES']['status'])
+    # load cache db
+    cachedb = create_cachedb(settings['DATABASES']['cache'])
 
-# load cache db
-cachedb = create_cachedb(settings['DATABASES']['cache'])
+    # load records db
+    recsdb = create_recsdb(settings['DATABASES']['records'], cachedb)
 
-# load records db
-recsdb = create_recsdb(settings['DATABASES']['records'], cachedb)
-
-# create instance of cache and catch any error as early as possible
-from .filecache import FileCache
-file_cache = FileCache(settings['RESOURCE_CACHE'])
+    # create instance of cache and catch any error as early as possible
+    from .filecache import FileCache
+    file_cache = FileCache(settings['RESOURCE_CACHE'])

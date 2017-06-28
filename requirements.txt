@@ -4,15 +4,17 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
-amqp==1.4.9               # via kombu
-anyjson==0.3.3            # via kombu
+--index-url https://pypi.priv.measureofquality.com/gams/prod/+simple/
+
+amqp==2.1.4               # via kombu
 beautifulsoup4==4.4.1
-billiard==3.3.0.23        # via celery
-celery==3.1.23
+billiard==3.5.0.2         # via celery
+celery==4.0.2
 hiredis==0.2.0
 html5lib==0.99999
-kombu==3.0.35             # via celery
-pytz==2016.6.1
+kombu==4.0.2              # via celery
+pytz==2017.2
 redis==2.10.5
 six==1.10.0               # via html5lib
 SQLAlchemy==1.0.14
+vine==1.1.3               # via amqp
