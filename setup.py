@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
-import os
+from codecs import open
+from os import path
 from setuptools import setup, find_packages
 
 import openkongqi as okq
 
+
 # local path
-here = os.path.abspath(os.path.dirname(__file__))
+here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(os.path.join(here, 'README.rst')) as fd:
+with open(path.join(here, 'README.rst')) as fd:
     long_description = fd.read()
 
 # list requirements for setuptools
-requirements = [
-    name.rstrip().split()[0]  # remove comments
-    for name in open(os.path.join(here, 'requirements.txt')).readlines()
-    if name[0] != '#'  # remove comments auto-generated from Sphinx
-]
+with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
+    requirements = []
+    for name in f.readlines():
+        if not name.startswith('--') and not name.startswith('#'):
+            requirements.append(name.rstrip())
 
 setup(
     name=okq.__name__,
