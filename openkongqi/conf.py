@@ -118,6 +118,7 @@ def load_logging():
 
 
 def config_from_object(obj):
+    global logger, statusdb, cachedb, recsdb, file_cache
     local_settings = obj.settings
     # use default values or the values found in settings file
     for setting in global_settings:
