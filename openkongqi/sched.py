@@ -12,7 +12,7 @@ def get_schedule(_sched):
     for source in get_sources():
         dyn_schedule[source['name']] = {
             'task': 'openkongqi.tasks.scrape',
-            'schedule': timedelta(_sched),
+            'schedule': _sched,
             'args': (source['name'], )
         }
     return dyn_schedule
