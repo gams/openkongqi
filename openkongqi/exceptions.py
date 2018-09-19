@@ -23,3 +23,7 @@ class FeedError(OpenKongqiError):
 
 class UUIDNotFoundError(OpenKongqiError):
     pass
+
+
+class APIKeyNotFoundError(OpenKongqiError):
+    pass

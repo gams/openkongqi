@@ -96,6 +96,7 @@ global_settings = {
     'FEEDS': {},
     'UA_FILE': os.path.join(here, 'data/user_agent_strings.json'),
     'STATIONS_MAP_DIR': os.path.join(here, 'data/stations'),
+    'API_KEYS': {}
 }
 
 settings = {}

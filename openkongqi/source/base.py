@@ -12,6 +12,7 @@ import urllib2
 from ..conf import settings, logger, statusdb, recsdb, file_cache
 from ..exceptions import SourceError
 from ..stations import get_station_map
+from ..apikeys import get_api_key
 from ..utils import get_rnd_item, get_uuid
 
 import pytz
@@ -46,6 +47,7 @@ class BaseSource(object):
         self.target = settings['SOURCES'][name]['target']
         self._station_map = get_station_map(
             settings['SOURCES'][name]['uuid'])
+        self._api_key = get_api_key(name.split(":")[0])
         self._tz = pytz.timezone(settings['SOURCES'][name]['tz'])
         self._status = statusdb
         self._cache = file_cache
