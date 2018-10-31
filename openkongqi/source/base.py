@@ -44,7 +44,7 @@ class BaseSource(object):
         if name not in settings['SOURCES']:
             raise SourceError('Unknown source ({})'.format(name))
         self.name = name
-        self.target = settings['SOURCES'][name]['target']
+        self.targets = settings['SOURCES'][name]['targets']
         self._station_map = get_station_map(
             settings['SOURCES'][name]['uuid'])
         self._api_key = get_api_key(name.split(":")[0])
@@ -67,13 +67,15 @@ class BaseSource(object):
           from the resource
         * :meth:`openkongqi.source.BaseSource.save_data`: save extracted data
         """
-        self._now = datetime.now(pytz.utc)
-        src_content = self.fetch()
-        self.save_status()
-        if src_content is not None:
-            content = self.cache(src_content)
-            data = self.extract(content)
-            self.save_data(data)
+        data = []
+        for target in self.targets:
+            self._now = datetime.now(pytz.utc)
+            src_content = self.fetch(target)
+            self.save_status()
+            if src_content is not None:
+                content = self.cache(src_content)
+                data.extend(self.extract(content))
+        self.save_data(data)
 
     def fetch(self):
         """Fetch the resource
@@ -181,12 +183,12 @@ class HTTPSource(BaseSource):
     def __init__(self, name):
         super(HTTPSource, self).__init__(name)
 
-    def fetch(self):
+    def fetch(self, target):
 
         _common_error_header = "Data fetch failure"
 
         try:
-            req = self.get_req(self.target)
+            req = self.get_req(target)
             resp = urllib2.urlopen(req, timeout=HTTP_TIMEOUT)
         except urllib2.HTTPError as e:
             self._info = None
