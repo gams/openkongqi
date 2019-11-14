@@ -8,6 +8,7 @@ from .exceptions import CacheError
 
 FILENAME = "{key}-{ts}.txt"
 
+
 class FileCache(object):
     """Simple file caching based on a key name and content.
     """
@@ -48,7 +49,7 @@ class FileCache(object):
             except OSError as e:
                 raise CacheError(
                     'cache creation problem ({})'.format(e.strerror))
-        fdst = open(filename, 'w')
+        fdst = open(filename, 'wb')
         shutil.copyfileobj(fsrc, fdst)
         filelink = self.get_latest_fp(key)
         if os.path.lexists(filelink):

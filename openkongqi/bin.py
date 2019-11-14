@@ -30,6 +30,7 @@ def load_confmod(parser, confmod):
     mod = import_from_cwd(confmod)
     config_from_object(mod)
 
+
 def okq_init():
     parser = argparse.ArgumentParser(
         description="initialize database for records",

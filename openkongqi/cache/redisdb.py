@@ -13,9 +13,13 @@ _DB_ID = 0
 class CacheWrapper(BaseCacheWrapper):
 
     def create_cnx(self, db_settings):
-        return redis.StrictRedis(host=db_settings.get('HOST', _HOST),
-                                 port=db_settings.get('PORT', _PORT),
-                                 db=db_settings.get('DB_ID', _DB_ID))
+        return redis.StrictRedis(
+            host=db_settings.get('HOST', _HOST),
+            port=db_settings.get('PORT', _PORT),
+            db=db_settings.get('DB_ID', _DB_ID),
+            charset="utf-8",
+            decode_responses=True
+        )
 
     def set(self, key, value):
         return self._cnx.set(key, value)
