@@ -1,6 +1,6 @@
 -r requirements.in
-pip-tools==1.7.0
-bumpr==0.2.1
+pip-tools==4.2.0
+bumpr==0.3.6
 Sphinx==1.4.5
 flake8==2.6.2
 tox==2.3.1

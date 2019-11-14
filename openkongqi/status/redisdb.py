@@ -16,9 +16,13 @@ class StatusWrapper(BaseStatusWrapper):
     """A wrapper for redis connection and custom methods"""
 
     def create_cnx(self, db_settings):
-        return redis.StrictRedis(host=db_settings.get('HOST', _HOST),
-                                 port=db_settings.get('PORT', _PORT),
-                                 db=db_settings.get('DB_ID', _DB_ID))
+        return redis.StrictRedis(
+            host=db_settings.get('HOST', _HOST),
+            port=db_settings.get('PORT', _PORT),
+            db=db_settings.get('DB_ID', _DB_ID),
+            charset="utf-8",
+            decode_responses=True
+        )
 
     def db_init(self):
         pass

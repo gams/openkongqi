@@ -1,7 +1,7 @@
 SQLAlchemy==1.0.14
 beautifulsoup4==4.4.1
-celery==4.0.2
+celery==4.3.0
 hiredis==0.2.0
 html5lib==0.99999
 pytz==2017.02
-redis==2.10.5
+redis==3.3.11

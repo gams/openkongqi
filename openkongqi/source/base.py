@@ -7,7 +7,8 @@ import os
 import re
 import socket
 import ssl
-import urllib2
+from urllib.error import HTTPError, URLError
+from urllib.request import urlopen, Request
 
 from ..conf import settings, logger, statusdb, recsdb, file_cache
 from ..exceptions import SourceError
@@ -133,7 +134,7 @@ class BaseSource(object):
         # display how much is cached into server
         logger.info("Cached {} kilobytes to server."
                     .format(os.path.getsize(fp)))
-        return open(fp, 'r')
+        return open(fp, 'rb')
 
     def pythonify(self, text, is_num=False):
         if text is None:
@@ -187,15 +188,15 @@ class HTTPSource(BaseSource):
 
         try:
             req = self.get_req(self.target)
-            resp = urllib2.urlopen(req, timeout=HTTP_TIMEOUT)
-        except urllib2.HTTPError as e:
+            resp = urlopen(req, timeout=HTTP_TIMEOUT)
+        except HTTPError as e:
             self._info = None
             self._statuscode = e.code
             logger.error("{}: {} {} ({})"
                          .format(_common_error_header,
                                  e.code, e.msg, e.url))
             return None
-        except urllib2.URLError as e:
+        except URLError as e:
             if isinstance(e.reason, socket.timeout):
                 self._info = None
                 self._statuscode = 418
@@ -245,7 +246,7 @@ class HTTPSource(BaseSource):
     def get_req(self, target):
         """Return an :class:`urllib2.Request` instance
         """
-        req = urllib2.Request(target)
+        req = Request(target)
         req.add_header('User-Agent', get_rnd_item(settings['UA_FILE']))
         return req
 

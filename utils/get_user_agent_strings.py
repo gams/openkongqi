@@ -4,8 +4,9 @@ import argparse
 import json
 import logging
 import socket
-import urllib2
 from time import time
+from urllib.error import URLError, HTTPError
+from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 
@@ -31,12 +32,12 @@ def fetch_ua_url_content(url, user_agent_category):
     try:
         logger.info("Attempting to fetch user agent data for %s...",
                     user_agent_category)
-        resp = urllib2.urlopen(url, timeout=HTTP_TIMEOUT)
-    except urllib2.HTTPError as err:
+        resp = urlopen(url, timeout=HTTP_TIMEOUT)
+    except HTTPError as err:
         logger.error("Data fetch failed due to HTTP error: %s %s",
                      err.code, err.reason)
         return None
-    except urllib2.URLError as err:
+    except URLError as err:
         if isinstance(err.reason, socket.timeout):
             logger.critical("Data fetch interrupted: HTTP timeout")
             return None

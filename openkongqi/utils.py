@@ -22,7 +22,7 @@ def get_rnd_item(fpath):
         with open(fpath, 'r') as json_file:
             items = json.load(json_file)
     except ValueError as e:
-        raise ConfigError(e.message)
+        raise ConfigError(e)
     return random.choice(items)
 
 
@@ -100,7 +100,7 @@ def load_tree(base_dir, data_loader):
                     data_chunk = json.load(jsonfd)
             except ValueError as e:
                 # "No JSON object could be decoded"
-                raise ConfigError(e.message)
+                raise ConfigError(e)
             except IOError as e:
                 raise ConfigError("{} ({})"
                                   .format(e.strerror, filepath))
