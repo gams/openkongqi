@@ -1,9 +1,8 @@
 -r requirements.in
-pip-tools==4.2.0
-bumpr==0.3.6
-Sphinx==1.4.5
-flake8==2.6.2
-tox==2.3.1
-wheel==0.29.0
-twine==1.7.4
-httpretty==0.8.14
+bumpr==0.3.7      
+flake8==3.7.9
+httpretty==0.9.7
+pip-tools==4.3.0
+Sphinx==2.3.0
+tox==3.14.2
+twine==3.1.1
