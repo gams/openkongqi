@@ -4,10 +4,18 @@ import httpretty
 import unittest
 from importlib import import_module
 
+from openkongqi.conf import config_from_object, settings
+
+
+class emptyConf(object):
+    settings = {}
+
 
 class TestFetch(unittest.TestCase):
 
     def setUp(self):
+        confobj = emptyConf()
+        config_from_object(confobj)
         mod = import_module('openkongqi.source.' + 'pm25in')
         src_name = 'pm25.in:shanghai'
         self.src = mod.Source(src_name)
@@ -48,7 +56,7 @@ class TestFetch(unittest.TestCase):
         self.src.target = url
         self.assertIsNotNone(self.src.fetch())
         self.assertEqual(self.src.fetch().read(),
-                         "This is NOT an empty response")
+                         b"This is NOT an empty response")
 
     @httpretty.activate
     def test_empty_resp(self):
