@@ -9,6 +9,7 @@ files =
     README.rst
     setup.py
     docs/conf.py
+    Makefile
 
 [bump]
 unsuffix = true

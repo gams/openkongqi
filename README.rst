@@ -124,7 +124,7 @@ To update the version of the package, use the following command:
 
 .. code-block:: sh
 
-    $ bumpr -b -m
+    $ bumpr -b -p
 
 Packaging
 ---------
