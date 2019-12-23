@@ -136,7 +136,8 @@ def config_from_object(obj):
     # check for existence and readability of UA_FILE;
     # catch ConfigError as early as possible
     try:
-        open(settings['UA_FILE'], 'r')
+        with open(settings['UA_FILE'], 'r'):
+            pass
     except IOError as e:
         raise ConfigError("{} ({})"
                           .format(e.strerror, settings['UA_FILE']))

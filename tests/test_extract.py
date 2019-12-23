@@ -5,16 +5,22 @@ from importlib import import_module
 import os
 import unittest
 
-from openkongqi.conf import settings
+from openkongqi.conf import config_from_object, settings
 
 
 here = os.path.abspath(os.path.dirname(__file__))
 TEST_DATA_PATH = os.path.join(here, 'data')
 
 
+class emptyConf(object):
+    settings = {}
+
+
 class TestExtract(unittest.TestCase):
 
     def setUp(self):
+        confobj = emptyConf()
+        config_from_object(confobj)
         sources = copy(settings['SOURCES'])
         for src in sources:
             sources[src]['content-fpath'] = \
@@ -37,9 +43,10 @@ class TestExtractPM25in(TestExtract):
         # shanghai covers most cases, can always override
         self.src_name = 'pm25.in:shanghai'
         self.src = self.mod.Source(self.src_name)
-        self.data_points = self.src.extract(
-            open(self.sources[self.src_name]['content-fpath'], 'rt').read()
-        )
+        with open(self.sources[self.src_name]['content-fpath'], 'rt') as fd:
+            self.data_points = self.src.extract(
+                fd.read()
+            )
 
     def test_numeric_integer(self):
         # int value for pm2.5
