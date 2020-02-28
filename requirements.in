@@ -1,4 +1,4 @@
-beautifulsoup4==4.8.1
+beautifulsoup4==4.8.2
 celery==4.4.0
 hiredis==1.0.1
 html5lib==1.0.1
