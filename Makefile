@@ -3,7 +3,7 @@ GIT:=/usr/bin/git
 
 NAME=openkongqi
 PACKAGE_NAME:=$(NAME)
-PACKAGE_VERSION:="0.2.1"
+PACKAGE_VERSION:="0.2.2"
 
 pipreq:
 	pip-compile requirements.in
