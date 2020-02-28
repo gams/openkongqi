@@ -7,7 +7,7 @@
 --index-url https://pypi.priv.measureofquality.com/gams/prod/+simple/
 
 amqp==2.5.2               # via kombu
-beautifulsoup4==4.8.1
+beautifulsoup4==4.8.2
 billiard==3.6.1.0         # via celery
 celery==4.4.0
 hiredis==1.0.1
