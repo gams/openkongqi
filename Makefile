@@ -31,9 +31,11 @@ pydist: pydistclean test
 pypipush: dist
 	twine upload dist/*
 
+pypi: pydist pypipush
+
 test: unittest
 
 unittest:
 	python -m unittest discover
 
-.PHONY: pipreq bump pushcode pushbump pydistclean pydist pypipush test unittest
+.PHONY: pipreq bump pushcode pushbump pydistclean pydist pypipush pypi test unittest
