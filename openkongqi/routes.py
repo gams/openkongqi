@@ -5,7 +5,8 @@ from openkongqi.source import get_source
 def source_router(name, args, kwargs, options, task=None):
     """
     A dynamic router used to set a specific queue to scrape a source if the
-    source definition has a key named 'queue'.
+    source definition has a key named 'queue'. If no queue is specified, return
+    `None` which will set the queue to `task_default_queue`.
 
     .. code:: json
 
