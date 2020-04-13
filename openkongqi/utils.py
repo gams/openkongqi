@@ -100,7 +100,8 @@ def load_tree(base_dir, data_loader):
                     data_chunk = json.load(jsonfd)
             except ValueError as e:
                 # "No JSON object could be decoded"
-                raise ConfigError(e)
+                msg = "{} ({})".format(e, filepath)
+                raise ConfigError(msg)
             except IOError as e:
                 raise ConfigError("{} ({})"
                                   .format(e.strerror, filepath))
