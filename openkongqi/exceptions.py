@@ -21,9 +21,5 @@ class FeedError(OpenKongqiError):
     pass
 
 
-class UUIDNotFoundError(OpenKongqiError):
-    pass
-
-
 class APIKeyNotFoundError(OpenKongqiError):
     pass
