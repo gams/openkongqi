@@ -9,6 +9,7 @@ import random
 from .exceptions import ConfigError, SourceError
 
 SEP = ':'
+WILDCARD = '*'
 
 
 def get_rnd_item(fpath):
@@ -33,7 +34,7 @@ def get_uuid(*args):
     :type \*args: str
     :returns: str - a UUID resulting from string concatenation
     """
-    return SEP.join(args)
+    return SEP.join([frag.replace(SEP + WILDCARD, "") for frag in args])
 
 
 def passthrough_loader(base_uuid, data):

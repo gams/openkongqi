@@ -29,11 +29,11 @@ class TestStations(unittest.TestCase):
     def test_get_uuid(self):
         """Test UUID generation"""
         self.assertEqual(
-            get_uuid('cn', 'shanghai', 'jinganjincezhan'),
-            'cn:shanghai:jinganjincezhan')
+            get_uuid('cn', 'shanghai', 'jinganjiancezhan'),
+            'cn:shanghai:jinganjiancezhan')
         self.assertEqual(
-            get_uuid('cn:shanghai', 'jinganjincezhan'),
-            'cn:shanghai:jinganjincezhan')
+            get_uuid('cn:shanghai', 'jinganjiancezhan'),
+            'cn:shanghai:jinganjiancezhan')
 
     def test_get_stations_uuid(self):
         """Test station map generation"""
@@ -54,16 +54,16 @@ class TestStations(unittest.TestCase):
             get_station_map('us:*'),
             {
                 'Cleveland Station': {
-                    'uuid': 'cleveland'
+                    'uuid': 'oh:cleveland'
                 },
                 'Cincinnati Station': {
-                    'uuid': 'cincinnati'
+                    'uuid': 'oh:cincinnati'
                 },
                 'San Francisco Station': {
-                    'uuid': 'san_francisco'
+                    'uuid': 'ca:san_francisco'
                 },
                 'Los Angeles Station': {
-                    'uuid': 'los_angeles'
+                    'uuid': 'ca:los_angeles'
                 }
             }
         )
