@@ -8,12 +8,12 @@
 
 amqp==2.5.2               # via kombu
 beautifulsoup4==4.8.2
-billiard==3.6.1.0         # via celery
-celery==4.4.0
+billiard==3.6.3.0         # via celery
+celery==4.4.2
 hiredis==1.0.1
 html5lib==1.0.1
 importlib-metadata==0.23  # via kombu
-kombu==4.6.7              # via celery
+kombu==4.6.8              # via celery
 more-itertools==7.2.0     # via zipp
 pytz==2019.3
 redis==3.3.11

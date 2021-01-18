@@ -1,5 +1,5 @@
 beautifulsoup4==4.8.2
-celery==4.4.0
+celery==4.4.2
 hiredis==1.0.1
 html5lib==1.0.1
 pytz==2019.3
