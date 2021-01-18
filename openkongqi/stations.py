@@ -12,15 +12,15 @@ _STATIONS_MAP = load_tree(settings['STATIONS_MAP_DIR'],
 
 
 def get_station_map(uuid=None):
-    """Get the entire station map given a UUID,
-    or get the concatenated station map from multiple cities/regions given a UIID with a wildcard "*"
+    """Get the entire station map given a UUID, or get the concatenated station
+    map from multiple cities/regions given a UIID with a wildcard "*"
 
     Usage::
+
         >>> from openkongqi.stations import get_station_map
         >>> get_station_map('cn:guangdong:guangzhou') # get the station map from Guangzhou, Guangdong
         >>> get_station_map('cn:guangdong:*') # get the concatenated station map from all cities in Guangdong province
         >>> get_station_map('cn:*') # get the concatenated station map from all cities and provinces in China
-        ...
 
     :param uuid: a UUID key
     :type uuid: str
