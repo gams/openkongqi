@@ -60,4 +60,5 @@ setup(
             "okq-source-test=utils.source_test:main",
         ]
     },
+    include_package_data=True,
 )
