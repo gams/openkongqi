@@ -4,8 +4,6 @@
 #
 #    pip-compile requirements-dev.in
 #
---index-url https://pypi.priv.measureofquality.com/gams/prod/+simple/
-
 alabaster==0.7.7          # via sphinx
 amqp==2.5.2               # via kombu
 babel==2.2.0              # via sphinx
