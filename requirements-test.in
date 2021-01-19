@@ -1,0 +1,4 @@
+-r requirements.in
+flake8==3.7.9
+httpretty==0.9.7
+tox==3.14.3

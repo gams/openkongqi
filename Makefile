@@ -7,6 +7,7 @@ PACKAGE_VERSION:="0.2.2"
 
 pipreq:
 	pip-compile requirements.in
+	pip-compile requirements-test.in
 	pip-compile requirements-dev.in
 
 bump:
