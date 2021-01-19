@@ -1,0 +1,32 @@
+{
+  "十五厂": {
+    "uuid": "shiwuchang"
+  },
+  "徐汇上师大": {
+    "uuid": "xuhuishangshida"
+  },
+  "普陀": {
+    "uuid": "putuo"
+  },
+  "杨浦四漂": {
+    "uuid": "yangpusipao"
+  },
+  "浦东川沙": {
+    "uuid": "pudongchuansha"
+  },
+  "浦东张江": {
+    "uuid": "pudongzhangjiang"
+  },
+  "浦东新区监测站": {
+    "uuid": "pudongxinqujiancezhan"
+  },
+  "虹口": {
+    "uuid": "hongkou"
+  },
+  "青浦淀山湖": {
+    "uuid": "qingpudianshanhu"
+  },
+  "静安监测站": {
+    "uuid": "jinganjincezhan"
+  }
+}
