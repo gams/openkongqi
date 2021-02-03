@@ -35,8 +35,8 @@ class TestStations(unittest.TestCase):
             get_uuid('cn:shanghai', 'jinganjiancezhan'),
             'cn:shanghai:jinganjiancezhan')
 
-    def test_get_stations_uuid(self):
-        """Test station map generation"""
+    def test_get_station_map_uuid(self):
+        """Test generating a station map from a UUID representing a station JSON."""
         self.assertEqual(
             get_station_map('us:oh'),
             {
@@ -49,7 +49,8 @@ class TestStations(unittest.TestCase):
             }
         )
 
-    def test_get_stations_uuid_wildcard(self):
+    def test_get_station_map_wildcard(self):
+        """Test generating a concatenated station map from a wildcarded UUID representing a folder of station JSONs."""
         self.assertEqual(
             get_station_map('us:*'),
             {
@@ -68,14 +69,38 @@ class TestStations(unittest.TestCase):
             }
         )
 
-    def test_get_stations_uuid_dne(self):
+    def test_get_station_map_uuid_wildcard(self):
+        """Test generating station map from a redundantly wildcarded UUID representing a station JSON."""
         self.assertEqual(
-            get_station_map('us:na'),
+            get_station_map('us:oh:*'),
+            {
+                'Cleveland Station': {
+                    'uuid': 'cleveland'
+                },
+                'Cincinnati Station': {
+                    'uuid': 'cincinnati'
+                }
+            }
+        )
+
+    def test_get_station_map_uuid_dne(self):
+        """Test generating station map from a UUID representing a station JSON that doesn't exist."""
+        self.assertEqual(
+            get_station_map('us:xyz'),
             {}
         )
 
-    def test_get_stations_uuid_wildcard_dne(self):
+    def test_get_station_map_wildcard_empty(self):
+        """Test generating station map from a wildcard UUID representing an empty folder."""
         self.assertEqual(
             get_station_map('mx:*'),
+            {}
+        )
+
+    def test_get_station_map_uuid_wildcard_dne(self):
+        """Test generating station map from a redundantly wildcarded UUID
+         representing a station JSON that doesn't exist."""
+        self.assertEqual(
+            get_station_map('mx:abc:*'),
             {}
         )
