@@ -13,12 +13,16 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst')) as fd:
     long_description = fd.read()
 
-# list requirements for setuptools
-with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
-    requirements = []
-    for name in f.readlines():
-        if not name.startswith('--') and not name.startswith('#'):
-            requirements.append(name.rstrip())
+requirements = [
+    "beautifulsoup4==4.9.3",
+    "celery>=4.4.5",
+    "hiredis==1.1.0",
+    "html5lib==1.1",
+    "pytz>=2020.5",
+    "redis==3.5.3",
+    "six>=1.13.0",
+    "sqlalchemy>=1.3.23",
+]
 
 setup(
     name=okq.__name__,
