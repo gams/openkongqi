@@ -1,0 +1,5 @@
+# /etc/cron.d/openkongqi - okq crontab
+# number of days to keep cache files
+CACHE_TTL=30
+# vacuum the cache for files older than CACHE_TTL days every day at 1:00
+0 1 * * *     www-data    find /srv/gams/openkongqi-gams-current/_cache/ -type f -mtime +${CACHE_TTL} -exec rm -f {} +
