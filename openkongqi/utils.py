@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from importlib import import_module
 import json
 import os
@@ -80,6 +79,10 @@ def load_tree(base_dir, data_loader):
 
     The keys are generated with a separator per folder depth.
 
+    .. note::
+
+        Files in the filesystem are expected to have a ``.json`` suffix.
+
     :param base_dir: a valid directory or path
     :type base_dir: str
     :param data_loader: a function specificying how to name the keys
@@ -95,6 +98,9 @@ def load_tree(base_dir, data_loader):
             reluuid = ''
 
         for file in files:
+            if not file.endswith('.json'):
+                continue
+
             filepath = os.path.join(root, file)
             try:
                 with open(filepath, 'r') as jsonfd:
