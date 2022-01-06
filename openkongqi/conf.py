@@ -22,48 +22,6 @@ from .cache.base import create_cachedb
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-DEFAULT_LOGGING = {
-    'disable_existing_loggers': False,
-    'formatters': {
-        'brief': {
-            'format': '%(asctime)s | %(name)s | %(levelname)s | %(message)s'
-        },
-        'precise': {
-            'format': '%(asctime)s [ %(levelname)s ] <PID %(process)d:%(processName)s> %(name)s.%(funcName)s(): %(message)s'
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'brief',
-            'level': 'DEBUG',
-            'stream': 'ext://sys.stdout'
-        },
-        'info_file_handler': {
-            'backupCount': 20,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'encoding': 'utf8',
-            'filename': '',  # loaded with global_settings['LOGFILE']
-            'formatter': 'precise',
-            'level': 'INFO',
-            'maxBytes': 10485760
-        },
-    },
-    'incremental': False,
-    'loggers': {
-        '': {
-            'handlers': ['info_file_handler'],
-            'level': 'DEBUG',
-            'propagate': False
-        },
-    },
-    'root': {
-        'handlers': ['info_file_handler'],
-        'level': 'DEBUG'
-    },
-    'version': 1,
-}
-
 #CONFMODULE = 'okqconfig'
 #os.environ.setdefault('OKQ_CONFMODULE', CONFMODULE)
 
@@ -88,8 +46,6 @@ global_settings = {
             'DB_ID': 0,
         },
     },
-    'LOGGING': DEFAULT_LOGGING,
-    'LOGFILE': '/tmp/openkongqi.log',
     'DEBUG': False,
     'SOURCES': {},
     'SOURCES_DIR': os.path.join(here, 'data/sources'),
@@ -100,38 +56,19 @@ global_settings = {
 }
 
 settings = {}
-logger = None
 statusdb = None
 cachedb = None
 recsdb = None
 file_cache = None
 
 
-def load_logging():
-    # set log file name
-    settings['LOGGING']['handlers']['info_file_handler']['filename'] = \
-        settings['LOGFILE']
-    # log to console if debug configured
-    if settings['DEBUG']:
-        settings['LOGGING']['loggers']['']['handlers'].append('console')
-        settings['LOGGING']['root']['handlers'].append('console')
-    logging.config.dictConfig(settings['LOGGING'])
-
-
 def config_from_object(obj):
-    global logger, statusdb, cachedb, recsdb, file_cache
+    global statusdb, cachedb, recsdb, file_cache
     local_settings = obj.settings
     # use default values or the values found in settings file
     for setting in global_settings:
         settings[setting] = local_settings.get(setting,
                 global_settings[setting])
-
-    # create logger instance
-    logger = logging.getLogger('okq')
-    try:
-        load_logging()
-    except ValueError:
-        raise ConfigError('Invalid logging configuration')
 
     # check for existence and readability of UA_FILE;
     # catch ConfigError as early as possible

@@ -6,6 +6,7 @@ import shutil
 
 from .exceptions import CacheError
 
+
 FILENAME = "{key}-{ts}.txt"
 
 

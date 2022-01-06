@@ -1,28 +1,26 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 from datetime import datetime
-from inspect import getmodulename
+import io
 import logging
 import os
 import re
-import socket
-import ssl
-from urllib.error import HTTPError, URLError
-from urllib.request import urlopen, Request
+from urllib3.util.retry import Retry
+from urllib3.exceptions import MaxRetryError
 
-from ..conf import settings, logger, statusdb, recsdb, file_cache
+from celery.utils.log import get_task_logger
+import requests
+
+from ..apikeys import get_api_key
+from ..conf import settings, statusdb, recsdb, file_cache
 from ..exceptions import SourceError
 from ..stations import get_station_map
-from ..apikeys import get_api_key
 from ..utils import get_rnd_item, get_uuid
 
 import pytz
 
 
-HTTP_TIMEOUT = 10
-
-logger = logging.getLogger("openkongqi.source.{}"
-                           .format(getmodulename(__file__)))
+logger = get_task_logger(__name__)
 
 
 class BaseSource(object):
@@ -132,7 +130,7 @@ class BaseSource(object):
         self._cache.set(self.name, content, self._now)
         fp = self._cache.get_fp(self.name, self._now)
         # display how much is cached into server
-        logger.info("Cached {} kilobytes to server."
+        self.log_info("Cached {} kilobytes to server."
                     .format(os.path.getsize(fp)))
         return open(fp, 'rb')
 
@@ -176,79 +174,163 @@ class BaseSource(object):
                                          end=end,
                                          context=self.key_context)
 
+    def log_debug(self, msg, *args, **kwargs):
+        self.log(logging.DEBUG, msg, *args, **kwargs)
+
+    def log_info(self, msg, *args, **kwargs):
+        self.log(logging.INFO, msg, *args, **kwargs)
+
+    def log_warning(self, msg, *args, **kwargs):
+        self.log(logging.WARNING, msg, *args, **kwargs)
+
+    def log_error(self, msg, *args, **kwargs):
+        self.log(logging.ERROR, msg, *args, **kwargs)
+
+    def log_critical(self, msg, *args, **kwargs):
+        self.log(logging.CRITICAL, msg, *args, **kwargs)
+
+    def log(self, level, msg, *args, **kwargs):
+        _msg = "{} - {}".format(self.name, msg)
+        logger.log(level, _msg, *args, **kwargs)
+
 
 class HTTPSource(BaseSource):
+
+    #: default HTTP method to use when performing the request
+    method='GET'
+    #: HTTP request timeout value in second
+    http_timeout = 10
+    #: SSL Verification
+    ssl_verify = True
+
 
     def __init__(self, name):
         super(HTTPSource, self).__init__(name)
 
     def fetch(self):
+        req = self.get_req()
+        res = self.send(req)
 
-        _common_error_header = "Data fetch failure"
-
-        try:
-            req = self.get_req(self.target)
-            resp = urlopen(req, timeout=HTTP_TIMEOUT)
-        except HTTPError as e:
+        if res is None:
             self._info = None
-            self._statuscode = e.code
-            logger.error("{}: {} {} ({})"
-                         .format(_common_error_header,
-                                 e.code, e.msg, e.url))
-            return None
-        except URLError as e:
-            if isinstance(e.reason, socket.timeout):
-                self._info = None
-                self._statuscode = 418
-                logger.error("{}: HTTP Timeout".format(_common_error_header))
-                return None
-            else:
-                self._info = None
-                self._statuscode = None
-                logger.error("{}: {}"
-                             .format(_common_error_header, e.reason.strerror))
-                return None
-        except socket.timeout:
-            self._info = None
-            self._statuscode = 418
-            logger.error("{}: HTTP Timeout".format(_common_error_header))
-            return None
-        except ssl.CertificateError as e:
-            logger.error("{}: {}"
-                         .format(_common_error_header, e.message))
+            self._statuscode = None
             return None
 
-        self._info = resp.info()
-        self._statuscode = resp.getcode()
-        logger.debug("Fetch status: HTTP {}".format(self._statuscode))
-
-        if self._statuscode == 204:  # 204: No Content
-            logger.warning("No message body included")
-            return None
+        self._info = res.headers
+        self._statuscode = res.status_code
 
         try:
             # don't use `resp.headers.get('content-length`)
             # because if it doesn't exist in headers it will return None
             # which makes it a false negative
-            content_length = resp.headers['content-length']
+            content_length = res.headers['content-length']
         except KeyError:
             pass
         else:
             if (self._statuscode == 200 and content_length == '0'):
-                logger.warning("Fetched content is empty; skipping cache ...")
+                self.log_warning("Fetched content is empty; skipping cache ...")
                 return None
 
-        return self.post_fetch(resp)
+        return self.post_fetch(res)
 
-    def post_fetch(self, resource):
-        return resource
+    def send(self, req, timeout=None):
+        """Wrap a :class:`Request <requests.Request>` in a session and send it.
+        Any type of error (status code not 2xx or exceptions) will be handled here
+        and the function then returns ``None``.
 
-    def get_req(self, target):
-        """Return an :class:`urllib2.Request` instance
+        :param req: :class:`Request <requests.Request>` instance
+        :type req: requests.Request
+        :param timeout: (optional) How long to wait for the server to send data
+            before giving up
+        :type timeout: float or tuple
+        :rtype: requests.Response
         """
-        req = Request(target)
-        req.add_header('User-Agent', get_rnd_item(settings['UA_FILE']))
+        if req.url is None:
+            self.log_warning("no URL provided, abort fetch")
+            return None
+
+        if timeout is None:
+            timeout = self.http_timeout
+
+        retry_count = 3
+        retry_strategy = Retry(
+            total=retry_count,
+            status_forcelist=[413, 429, 500, 502, 503, 504],
+        )
+        adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
+        s = requests.Session()
+        s.mount("https://", adapter)
+        s.mount("http://", adapter)
+
+        s = requests.Session()
+        prepped = s.prepare_request(req)
+
+        try:
+            res = s.send(prepped, timeout=timeout, verify=self.ssl_verify)
+        except MaxRetryError:
+            self.log_error("fetch failed after {} retries".format(retry_count))
+            return None
+        except requests.Timeout as e:
+            self.log_error("fetch error: timeout ({})".format(e.request.url))
+            return None
+        except requests.RequestException as e:
+            self.log_error("fetch error: {}".format(e.request.url))
+            return None
+
+        if res.status_code != requests.codes.ok:
+            self.log_error("fetch error: status {} ({})".format(
+                    res.status_code,
+                    req.url,
+                )
+            )
+            self.log_debug(res.text)
+            return
+
+        s.close()
+
+        self.log_info("fetch success: {}".format(res.status_code))
+        self.log_debug(res.text)
+
+        return res
+
+    def post_fetch(self, response):
+        # The Bytes stream is required for the caching operations
+        # response.content is a bytes string
+        return io.BytesIO(response.content)
+
+    def get_req(self, **kwargs):
+        """Return an :class:`requests.Request` instance
+        """
+        req = requests.Request(
+            self.method,
+            self.get_url(**kwargs),
+            data=self.get_data(**kwargs),
+            json=self.get_json(**kwargs),
+            params=self.get_params(**kwargs),
+            headers=self.get_headers(**kwargs),
+        )
         return req
+
+    def get_url(self, **kwargs):
+        """Return the target URL, if ``None`` is returned, the scrape will be
+        gracefully stopped.
+        """
+        return self.target
+
+    def get_data(self, **kwargs):
+        return {}
+
+    def get_json(self, **kwargs):
+        return None
+
+    def get_params(self, **kwargs):
+        return {}
+
+    def get_headers(self, **kwargs):
+        headers = {
+            'User-Agent': get_rnd_item(settings['UA_FILE']),
+        }
+        return headers
 
     def get_status_data(self):
         data = {

@@ -5,13 +5,14 @@ from inspect import getmodulename
 import logging
 import re
 
+from celery.utils.log import get_task_logger
+
 from .base import HTTPSource
-from ..conf import logger
 
 import bs4
 
-logger = logging.getLogger("openkongqi.source.{}"
-                           .format(getmodulename(__file__)))
+
+logger = get_task_logger(__name__)
 
 
 class Source(HTTPSource):
