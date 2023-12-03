@@ -141,7 +141,10 @@ class BaseSource(object):
         if self.null_re is not None:
             if self.null_re.match(text) is None:
                 if is_num:  # remove everything but nums and dots
-                    return float(re.sub(r'[^\d.]+', '', text))
+                    try:
+                        return float(re.sub(r'[^\d.]+', '', text))
+                    except ValueError:
+                        self.log_error(f"{self.name} - Could not convert value: {text}")
                 else:
                     return text
             else:
@@ -151,7 +154,7 @@ class BaseSource(object):
                 try:
                     return float(re.sub(r'[^\d.]+', '', text))
                 except ValueError:
-                    pass
+                    self.log_error(f"{self.name} - Could not convert value: {text}")
             else:
                 return text
 
