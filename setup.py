@@ -20,7 +20,7 @@ requirements = [
     "html5lib==1.1",
     "pytz>=2020.5",
     "redis==3.5.3",
-    "requests==2.27.0",
+    "requests>=2.28.1",
     "six>=1.13.0",
     "sqlalchemy>=1.3.23",
 ]
