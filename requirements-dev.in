@@ -2,6 +2,7 @@
 -r requirements-test.in
 bumpr==0.3.7      
 Jinja2==3.0.3
-pip-tools==6.4.0
+pip-tools==7.3.0
 Sphinx==4.3.2
 twine==3.7.1
+wheel==0.42.0
