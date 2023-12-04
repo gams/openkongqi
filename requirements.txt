@@ -18,7 +18,7 @@ charset-normalizer==2.0.12
     # via requests
 greenlet==3.0.1
     # via sqlalchemy
-hiredis==1.1.0
+hiredis==2.0.0
     # via -r requirements.in
 html5lib==1.1
     # via -r requirements.in

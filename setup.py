@@ -16,7 +16,7 @@ with open(path.join(here, 'README.rst')) as fd:
 requirements = [
     "beautifulsoup4==4.9.3",
     "celery==4.4.7",
-    "hiredis==1.1.0",
+    "hiredis==2.0.0",
     "html5lib==1.1",
     "pytz>=2020.5",
     "redis==3.5.3",
