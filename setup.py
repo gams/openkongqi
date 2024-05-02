@@ -16,13 +16,13 @@ with open(path.join(here, 'README.rst')) as fd:
 requirements = [
     "beautifulsoup4==4.9.3",
     "celery==4.4.7",
-    "hiredis==2.0.0",
+    "hiredis==2.3.2",
     "html5lib==1.1",
-    "pytz>=2020.5",
-    "redis==3.5.3",
-    "requests>=2.28.1",
+    "pytz>=2024.1",
+    "redis==5.0.4",
+    "requests>=2.31.0",
     "six>=1.13.0",
-    "sqlalchemy>=1.3.23",
+    "sqlalchemy>=1.4.1",
 ]
 
 setup(
