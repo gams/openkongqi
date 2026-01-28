@@ -98,8 +98,13 @@ class BaseSource(object):
 
         .. note:: This is not performing any recursive search in the map
         """
-        return get_uuid(settings['SOURCES'][self.name]['uuid'],
-                        self._station_map[name]['uuid'])
+        try:
+            s_uuid = get_uuid(settings['SOURCES'][self.name]['uuid'],
+                              self._station_map[name]['uuid'])
+        except KeyError:
+            return None
+
+        return s_uuid
 
     def get_status_data(self):
         """Get the fetch status
