@@ -4,5 +4,5 @@ bumpr==0.3.7
 Jinja2==3.0.3
 pip-tools==7.3.0
 Sphinx==4.3.2
-twine==3.7.1
+twine==5.0.0
 wheel==0.42.0
