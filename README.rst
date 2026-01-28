@@ -150,4 +150,5 @@ Kōngqì (空气) is the Chinese word for air/atmosphere.
 License
 =======
 
-This software is licensed under the Apache License 2.0. See the LICENSE file in the top distribution directory for the full license text.
+This software is licensed under the Apache License 2.0. See the LICENSE file in
+the top distribution directory for the full license text.
